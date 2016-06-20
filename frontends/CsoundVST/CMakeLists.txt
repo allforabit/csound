@@ -17,15 +17,14 @@ if(BUILD_CSOUNDVST)
     include_directories(${VSTSDK2X_INCLUDE_DIR}/public.sdk/source/vst2.x)
     include_directories(${VSTSDK2X_INCLUDE_DIR}/pluginterfaces/source/vst2.x)
     include_directories(${FLTK_INCLUDE_DIR})
-    add_definitions(-DVST_FORCE_DEPRECATED=0)
     set(CSOUNDVST_SRCS
         CsoundVst.cpp
         CsoundVstFltk.cpp
         CsoundVstUi.cpp
         ${VSTSDK2X_INCLUDE_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
         ${VSTSDK2X_INCLUDE_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp)
-    add_compile_options("-O2")
     add_library(CsoundVST SHARED ${CSOUNDVST_SRCS})
+    target_compiler_definitions(CsoundVST PRIVATE -DVST_FORCE_DEPRECATED=0 -O2)
     set_target_properties(CsoundVST PROPERTIES
         OUTPUT_NAME CsoundVST
         RUNTIME_OUTPUT_DIRECTORY ${BUILD_BIN_DIR}
@@ -65,4 +64,5 @@ if(BUILD_CSOUNDVST)
         RUNTIME DESTINATION "${EXECUTABLE_INSTALL_DIR}")
 
 endif()
+
 
