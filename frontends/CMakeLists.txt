@@ -67,14 +67,10 @@ set_target_properties(csladspa PROPERTIES PREFIX "")
 check_deps(BUILD_CSBEATS FLEX_EXECUTABLE BISON_EXECUTABLE)
 
 if(BUILD_CSBEATS)
-
     BISON_TARGET(csbeats_PARSER beats/beats.y ${CMAKE_CURRENT_BINARY_DIR}/beats.tab.c)
     FLEX_TARGET(csbeats_SCANNER beats/beats.l ${CMAKE_CURRENT_BINARY_DIR}/beatslex.yy.c)
 
     ADD_FLEX_BISON_DEPENDENCY(csbeats_SCANNER csbeats_PARSER)
-
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/beats)
 
     set(csbeats_SRCS
     	${CMAKE_CURRENT_SOURCE_DIR}/beats/main.c
@@ -90,6 +86,8 @@ if(BUILD_CSBEATS)
       make_executable(csbeats "${csbeats_SRCS}" "m")
     endif()
 
+    target_include_directories(csbeats PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(csbeats PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/beats)
 endif()
 
 #PD Interface
@@ -99,7 +97,6 @@ else()
     check_deps(BUILD_PD_CLASS PD_HEADER_PATH)
 endif()
 if(BUILD_PD_CLASS)
-    include_directories(${PD_HEADER_PATH})
     if(LINUX)
         set(pdname "csound6~.pd_linux")
     elseif(APPLE)
@@ -108,6 +105,7 @@ if(BUILD_PD_CLASS)
         set(pdname "csound6~.dll")
     endif()
     add_library(pdcsound MODULE csoundapi_tilde/csoundapi_tilde.c)
+    target_include_directories(pdcsound PRIVATE ${PD_HEADER_PATH})
     if(WIN32)
         target_link_libraries (pdcsound ${CSOUNDLIB} ${PD_LIBRARY})
         set_target_properties(pdcsound  PROPERTIES "LINK_FLAGS"
@@ -152,9 +150,9 @@ if(BUILD_WINSOUND)
     make_executable(winsound "${WINSOUND_SRCS}" "${FLTK_LIBRARIES}")
     target_link_libraries (winsound ${CSOUNDLIB})
     add_dependencies(winsound winsound_fl)
-    include_directories(${FLTK_INCLUDE_DIR})
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/winsound)
+    target_include_directories(winsound ${FLTK_INCLUDE_DIR})
+    target_include_directories(winsound ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(winsound ${CMAKE_CURRENT_SOURCE_DIR}/winsound)
 endif()
 
 # debugger command line app
