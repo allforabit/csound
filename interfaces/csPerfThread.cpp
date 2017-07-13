@@ -419,7 +419,6 @@ int CsoundPerformanceThread::Perform()
         csoundUnlockMutex(queueLock);
         // if error or end of score, return now
         if (retval)
-          csoundMessage(csound, "msg->Run() returned an error, so performance is ending now.\n");
           goto endOfPerf;
         // if paused, wait until a new message is received, then loop back
         if (!paused)
