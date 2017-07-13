@@ -419,6 +419,7 @@ int CsoundPerformanceThread::Perform()
         csoundUnlockMutex(queueLock);
         // if error or end of score, return now
         if (retval)
+          csoundMessage(csound, "msg->Run() returned an error, so performance is ending now.\n");
           goto endOfPerf;
         // if paused, wait until a new message is received, then loop back
         if (!paused)
@@ -494,9 +495,7 @@ extern "C" {
   {
     CsPerfThread_PerformScore p(userData);
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
-    // perform the score
     int retval = p.Perform();
-    // return positive value if stopped or end of score, and negative on error
     return (uintptr_t) ((unsigned int) retval);
   }
 }
